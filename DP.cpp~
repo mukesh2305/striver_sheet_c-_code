@@ -1,0 +1,1301 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+/////////////////////////////////////////////////
+void init_code() {
+#ifndef ONLINE_JUDGE
+	freopen("input.txt", "r", stdin);
+	freopen("output.txt", "w", stdout);
+#endif
+}
+
+/////////////////////////////////////////////////////////////////////////
+// DP 1. Introduction to Dynamic Programming | Memoization | Tabulation | Space Optimization Techniques
+
+// Fibonaci Number
+// 0 1 1 2 3 5 8 13 21 .....
+
+// TC O(N)
+// SC O(N) (this is stack space) + O(N) (to this for array)
+// 1 => memorization formate
+int fibo_dp(int n, vector<int> & dp) {
+	if (n <= 1) return n;
+
+	if (dp[n] != -1) return dp[n];
+
+	return dp[n] = fibo_dp(n - 1, dp) + fibo_dp(n - 2, dp);
+}
+
+void solve_fibo_dp() {
+	int n = 5;
+	vector<int> dp(n + 1, -1);
+	cout << fibo_dp(n , dp);
+}
+
+// 2 => using tabulation
+// TC => O(N)
+// SC => O(N)
+int fibo_dp_tab(int n, vector<int> & dp) {
+	dp[0] = 0;
+	dp[1] = 1;
+	for (int i = 2; i <= n ; i++)
+		dp[i] = dp[i - 1] + dp[i - 2];
+	return dp[n];
+}
+
+// 2 => optimized tablutaion
+// TC => O(N)
+// SC => O(1)
+int fibo_dp_tab1(int n) {
+//ind// 0 1 2 3 4 5
+	// 0 1 1 2 3 5
+	// eg : n = 2, prev1 = 1, prev2 = 0
+
+	int prev2 = 0;
+	int prev1 = 1;
+	for (int i = 2 ; i <= n ; i++) {
+		int ans = prev1 + prev2;
+		prev2 = prev1;
+		prev1 = ans;
+	}
+	return prev1;
+}
+void solve_fibo_dp_tab() {
+	int n = 5;
+	vector<int> dp(n + 1, -1);
+	// cout << fibo_dp_tab(n , dp);
+	cout << fibo_dp_tab1(n);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////
+// DP 2. Climbing Stairs | Learn How to Write 1D Recurrence Relations
+// this fibonaci
+long long mod = 1000000007;
+int helper(int n, vector<int> & dp) {
+	if (n <= 1) return 1;
+
+	if (dp[n] != -1) return dp[n];
+
+	return dp[n] = (helper(n - 1, dp) + helper(n - 2, dp)) % mod;
+}
+int countDistinctWays(int nStairs) {
+	int n = nStairs;
+	vector<int> dp(n + 1, -1);
+	return helper(n , dp);
+}
+
+void solve_countDistinctWays() {
+	int nStairs = 3;
+	cout << countDistinctWays(nStairs);
+}
+
+/////////////////////////////////////////////////////////////////////////
+// DP 3. Frog Jump | Dynamic Programming | Learn to write 1D DP
+
+// memorization approach
+// TC O(N)
+// SC O(N) + O(N)
+int frog_f(int ind, vector<int> & heights, vector<int> & dp) {
+	if (ind == 0) return 0;
+	if (dp[ind] != -1) return dp[ind];
+
+	int left = frog_f(ind - 1, heights, dp) + abs(heights[ind] - heights[ind - 1]);
+	int right = INT_MAX; // 1 2 3 4 5
+	if (ind > 1) {
+		right = frog_f(ind - 2, heights, dp) + abs(heights[ind] - heights[ind - 2]);
+	}
+
+	return dp[ind] = min(left , right);
+}
+int frogJump(int n, vector<int> &heights) {
+	vector<int> dp(n + 1, -1);
+	// n - 1 is the last index of array
+	return frog_f(n - 1, heights, dp);
+}
+
+// tabulation approach
+// TC O(N)
+// SC O(N)
+int frogJump_tabulation(int n, vector<int> & heights) {
+	vector<int> dp(n + 1, -1);
+	dp[0] = 0;
+	for (int ind = 1; ind < n; ind++) {
+		int FS = dp[ind - 1] + abs(heights[ind] - heights[ind - 1]);
+		int SS = INT_MAX;
+		if (ind > 1)
+			SS = dp[ind - 2] + abs(heights[ind] - heights[ind - 2]);
+		dp[ind] = min(FS, SS);
+	}
+
+	return dp[n - 1];
+}
+
+void solve_forgJump() {
+	int t;
+	cin >> t;
+
+	while (t--) {
+		int n;
+		cin >> n ;
+		vector<int> heights;
+		for (int i = 0; i < n; i++) {
+			int val;
+			cin >> val;
+			heights.push_back(val);
+		}
+		// cout << frogJump(n , heights) << endl;
+		cout << frogJump_tabulation(n , heights) << endl;
+	}
+}
+
+///////////////////////////////////////////////////////////////////
+// DP 4. Frog Jump with K Distance | Lecture 3 Follow Up Question
+// TC O(N * K)
+// SC O(N) + O(N)
+// memorization approach
+int frog_f_2(int ind, int k, vector<int> & heights, vector<int> & dp) {
+	if (ind == 0) return 0;
+	if (dp[ind] != -1) return dp[ind];
+
+	int minSteps = INT_MAX;
+	for (int j = 1; j <= k; j++) {
+		if (ind - j >= 0) {
+			int jump = frog_f_2(ind - j, k, heights, dp) + abs(heights[ind] - heights[ind - j]);
+			minSteps = min(minSteps, jump);
+		}
+	}
+	return dp[ind] = minSteps;
+}
+
+
+int frogJump_2(int n, int k , vector<int> & heights) {
+	vector<int> dp(n + 1, -1);
+	return frog_f_2(n - 1, k, heights, dp);
+}
+
+// tabulation approach
+// TC O(N * K)
+// SC O(N)
+int frogJump_2_tabulation(int n, int k, vector<int> & heights) {
+	vector<int> dp(n + 1, -1);
+	dp[0] = 0;
+
+	for (int ind = 1; ind < n; ind++) {
+
+		int minSteps = INT_MAX;
+
+		for (int j = 1; j <= k; j++) {
+
+			if (ind - j >= 0) {
+				int jump = dp[ind - j] + abs(heights[ind] - heights[ind - j]);
+				// cout << jump << " ";
+				minSteps = min(minSteps, jump);
+			}
+		}
+		// cout << " min " << minSteps << endl;
+		dp[ind] = minSteps;
+	}
+	return dp[n - 1];
+}
+void solve_forgJump_2() {
+	int n, k;
+	cin >> n >> k;
+	vector<int> heights;
+	for (int i = 0; i < n ; i++) {
+		int val;
+		cin >> val;
+		heights.push_back(val);
+	}
+	// cout << frogJump_2(n , k , heights);
+	cout << frogJump_2_tabulation(n , k , heights);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
+// DP 5. Maximum Sum of Non-Adjacent Elements | House Robber | 1-D | DP on Subsequences
+// TC O(N)
+// SC O(N) + O(N)
+// memorization approach
+int f_max_memo(int ind , vector<int> & nums, vector<int> & dp) {
+	if (ind == 0) return nums[ind];
+	if (ind < 0) return 0;
+
+	if (dp[ind] != -1) return dp[ind];
+
+	int pick = nums[ind] + f_max_memo(ind - 2, nums, dp); // we are not picking adjcent indx that's why ind - 2
+	int notPick = 0 + f_max_memo(ind - 1, nums, dp);
+
+	return dp[ind] = max(pick, notPick);
+}
+int maximumNonAdjacentSum(vector<int> &nums) {
+	int n = nums.size();
+	vector<int> dp(n + 1, -1);
+	return f_max_memo(n - 1, nums, dp);
+}
+
+// TC O(N)
+// SC O(N)
+// tabulation approach
+int f_max_tab(int n , vector<int> & nums, vector<int> & dp) {
+	dp[0] = nums[0];
+
+	for (int ind = 1; ind < n; ind++) {
+		// int pick = nums[ind] + dp[ind - 2];
+
+		int pick = nums[ind] ;
+		if (ind > 1)
+			pick += dp[ind - 2]; // to handle -ve handle;
+
+		int notPick = 0 + dp[ind - 1];
+
+		dp[ind] = max(pick, notPick);
+	}
+
+	return dp[n - 1];
+}
+int maximumNonAdjacentSum_tabulation(vector<int> & nums) {
+	int n = nums.size();
+	vector<int> dp(n + 1, -1);
+	return f_max_tab(n, nums, dp);
+}
+void solve_maximumNonAdjacentSum() {
+	int t;
+	cin >> t;
+
+	while (t--) {
+		int n;
+		cin >> n ;
+		vector<int> nums;
+		for (int i = 0; i < n; i++) {
+			int val;
+			cin >> val;
+			nums.push_back(val);
+		}
+		cout << maximumNonAdjacentSum(nums) << endl;
+		// cout << maximumNonAdjacentSum_tabulation(nums) << endl;
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// DP 6. House Robber 2 | 1D DP | DP on Subsequences
+// this problem is same as above problem
+// TC O(N)
+// SC O(N) + O(N)
+// memorization approac
+long long int f_rob_memo(int ind, vector<int> & nums, vector<int> & dp) {
+	if (ind == 0) return nums[ind];
+	if (ind < 0) return 0;
+	if (dp[ind] != -1) return dp[ind];
+	long long int pick = nums[ind] + f_rob_memo(ind - 2 , nums, dp);
+	int long long notPick = 0 + f_rob_memo(ind - 1, nums, dp);
+	return dp[ind] = max(pick, notPick);
+}
+int houseRobber(vector<int>& nums) {
+	int n = nums.size();
+	if (n == 1) return nums[0];
+	vector<int> temp1, temp2;
+
+	for (int i = 0; i < n ; i++) {
+		if (i != 0) temp1.push_back(nums[i]);
+		if (i != n - 1) temp2.push_back(nums[i]);
+	}
+
+	vector<int> dp((int)temp1.size(), -1);
+
+	long long int ans1 = f_rob_memo((int)temp1.size() - 1, temp1, dp);
+	for (int i = 0; i < (int)temp1.size(); i++) dp[i] = -1;
+	long long int ans2 = f_rob_memo((int)temp2.size() - 1, temp2, dp);
+	return max(ans1, ans2);
+}
+
+// we can also do tabulation
+// if we have time than
+// optimized space approach
+long long int f_rob_optimize(vector<int> & nums) {
+	int n = nums.size();
+	long long int prev1 = nums[0];
+	long long int prev2 = 0;
+
+	for (int ind = 1; ind < n ; ind++) {
+		long long int pick = nums[ind];
+		if (ind > 1) pick += prev2;
+		int long long  notPick = 0 + prev1;
+
+		long long int curi = max(pick, notPick);
+		prev2 = prev1;
+		prev1 = curi;
+	}
+	return prev1;
+}
+long long int houseRobber_optimized(vector<int> & nums) {
+	int n = nums.size();
+	vector<int> temp1, temp2;
+	if (n == 1) return nums[0];
+
+	for (int i = 0; i < n ; i++) {
+		if (i != 0)  temp1.push_back(nums[i]);
+		if (i != n - 1)  temp2.push_back(nums[i]);
+	}
+
+	long long int ans1 = f_rob_optimize(temp1);
+	long long int ans2 = f_rob_optimize(temp2);
+	return max(ans1, ans2);
+}
+void solve_houseRobber() {
+	int t;
+	cin >> t;
+
+	while (t--) {
+		int n;
+		cin >> n ;
+		vector<int> valueInHouse;
+		for (int i = 0; i < n; i++) {
+			int val;
+			cin >> val;
+			valueInHouse.push_back(val);
+		}
+		// cout << houseRobber(valueInHouse) << endl;
+		cout << houseRobber_optimized(valueInHouse) << endl;
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// DP 7. Ninja's Training | MUST WATCH for 2D CONCEPTS 🔥 | Vacation | Atcoder | 2D DP
+// memorization approach
+// TC O(N * 4) * 3
+// TC O(N) + O(N * 4)
+int f_nin_memo(int day, int last, vector<vector<int>> & points, vector<vector<int>> & dp) {
+
+
+	if (day == 0) {
+		int maxi = 0;
+		for (int task = 0; task <= 2; task++) {
+			if (task != last) {
+				maxi = max(maxi, points[0][task]);
+			}
+		}
+		return dp[day][last] = maxi;
+	}
+
+	if (dp[day][last] != -1) return dp[day][last];
+
+	int maxi = 0;
+	for (int task = 0; task <= 2; task ++) {
+		if (task != last) {
+			int activity = points[day][task] + f_nin_memo(day - 1, task, points, dp);
+			maxi = max(maxi, activity);
+		}
+	}
+
+	return dp[day][last] = maxi;
+}
+int ninjaTraining(int n, vector<vector<int>> & points) {
+	vector<vector<int>> dp(n, vector<int> (4, -1));
+	return f_nin_memo(n - 1, 3, points, dp);
+}
+
+// tabulation approach
+// TC O(N * 4) * 3
+// TC O(N * 4)
+
+int ninjaTraining_tabulation(int n, vector<vector<int>> & points) {
+	vector<vector<int>> dp(n , vector<int> (4 , -1));
+
+	dp[0][0] = max(points[0][1], points[0][2]);
+	dp[0][1] = max(points[0][0], points[0][2]);
+	dp[0][2] = max(points[0][0], points[0][1]);
+	dp[0][3] = max(points[0][0], max(points[0][1], points[0][2]));
+
+	for (int day  = 1; day < n; day++) {
+		for (int last = 0; last < 4; last++) {
+			// dp[day][last] = 0;
+			int maxi = 0;
+			for (int task = 0; task <= 2 ; task++) {
+				if (task != last) {
+					int activity = points[day][task] + dp[day - 1][task];
+					// dp[day][last] = max(dp[day][last], activity);
+					maxi = max(maxi, activity);
+				}
+			}
+			dp[day][last] = maxi;
+		}
+	}
+	return dp[n - 1][3];
+}
+
+
+void solve_ninjaTraining() {
+	// N * 3 matrix is given
+	int t;
+	cin >> t;
+
+	while (t--) {
+		int n;
+		cin >> n ;
+		vector<vector<int>> points;
+		for (int i = 0; i < n; i++) {
+			vector<int> temp;
+			for (int j = 0; j < 3; j++) {
+				int val;
+				cin >> val;
+				temp.push_back(val);
+			}
+			points.push_back(temp);
+		}
+		// cout << ninjaTraining(n , points) << endl;
+		cout << ninjaTraining_tabulation(n , points) << endl;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////
+// DP 8. Grid Unique Paths | Learn Everything about DP on Grids | ALL TECHNIQUES 🔥
+// TC O(m * n)
+// SC  O((n - 1) + (m - 1)) + O(n * m)
+int f_uni(int i, int j, vector<vector<int>> & dp) {
+	if (i == 0 && j == 0) return 1;
+	if (i < 0 || j < 0) return 0;
+
+	if (dp[i][j] != -1) return dp[i][j];
+	int up = f_uni(i - 1, j, dp);
+	int left = f_uni(i, j - 1, dp);
+	return dp[i][j] = up + left;
+
+}
+int uniquePaths(int m, int n) {
+	vector<vector<int>> dp(m , vector<int> (n , -1));
+	return f_uni(m - 1, n - 1, dp);
+}
+
+// tabulation approach
+// TC O(m * n)
+// SC O(n * m)
+int f_uni_tab(int m, int n, vector<vector<int>> & dp) {
+
+	for (int i = 0; i < m; i++) {
+		for (int j = 0; j < n; j++) {
+			if (i == 0 && j == 0) dp[0][0] = 1;
+			else {
+				int up = 0, left = 0;
+				if (i > 0)
+					up = dp[i - 1][j];
+				if (j > 0)
+					left = dp[i][j - 1];
+				dp[i][j] = up + left ;
+			}
+		}
+	}
+
+	return dp[m  - 1][n - 1];
+}
+int uniquePaths_tabulation(int m, int n) {
+	vector<vector<int>> dp(m , vector<int> (n , -1));
+	return f_uni_tab(m, n, dp);
+}
+
+
+void solve_uniquePaths() {
+	// N * 3 matrix is given
+	int t;
+	cin >> t;
+
+	while (t--) {
+		int m , n ;
+		cin >> m >> n;
+		// cout << uniquePaths(m , n) << endl;
+		cout << uniquePaths_tabulation(m , n) << endl;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// DP 9. Unique Paths 2 | DP on Grid with Maze Obstacles
+// 63. Unique Paths II
+int f_uni_obs(int i, int j, vector<vector<int>> & mat, vector<vector<int>> & dp) {
+	// if(i>= 0 && j>= 0 && maze[i][j]==-1) return 0;
+
+	if (i == 0 && j == 0 && mat[i][j] != -1) return 1;
+	if (i < 0 || j < 0  || mat[i][j] == -1) return 0;
+	if (dp[i][j] != -1) return dp[i][j];
+
+	int up = f_uni_obs(i - 1, j, mat, dp);
+	int left = f_uni_obs(i, j - 1, mat, dp);
+
+	return dp[i][j] = up + left;
+}
+int uniquePathsWithObstacles(vector<vector<int>> &mat) {
+	int m = mat.size();
+	int n = mat[0].size();
+	vector<vector<int>> dp(m , vector<int> (n , -1));
+	return f_uni_obs(m - 1, n - 1, mat, dp);
+}
+
+//tabulation_approach
+int uniquePathsWithObstacles_tabulation(vector<vector<int>>& mat) {
+	int m = mat.size();
+	int n = mat[0].size();
+	vector<vector<int>> dp(m , vector<int> (n , -1));
+	// return f(m - 1, n - 1, obstacleGrid, dp);
+	for (int i = 0; i < m; i++) {
+		for (int j = 0; j < n ; j++) {
+			if ( i == 0 && j == 0 && mat[i][j] != -1) dp[i][j] = 1;
+			else {
+				int up = 0, left = 0;
+				if (i > 0 && mat[i][j] != -1)
+					up = dp[i - 1][j];
+				if (j > 0 && mat[i][j] != -1)
+					left = dp[i][j - 1];
+				dp[i][j] = up + left ;
+			}
+		}
+	}
+	return dp[m - 1][n - 1];
+}
+
+void solve_uniquePathsWithObstacles() {
+	vector<vector<int>> mat = {
+		{0, 0, 0},
+		{0, -1, 0},
+		{0, 0, 0}
+	};
+	cout << uniquePathsWithObstacles(mat);
+	// cout << uniquePathsWithObstacles_tabulation(mat);
+}
+
+////////////////////////////////////////////////////////////
+// DP 10. Minimum Path Sum in Grid | Asked to me In Microsoft Internship Interview | DP on GRIDS
+
+// TC O(N * M)
+// SC O(N * M) + O(path length) => and path length = (m - 1) + (n - 1)
+int f_min_memo(int i, int j , vector<vector<int>> & grid, vector<vector<int>> & dp) {
+	if (i == 0 && j == 0) return grid[0][0];
+	if (i < 0 || j < 0) return 1e9;
+
+	if (dp[i][j] != -1) return dp[i][j];
+
+	int up = grid[i][j] + f_min_memo(i - 1, j, grid, dp);
+	int left = grid[i][j] + f_min_memo(i, j - 1, grid, dp);
+
+	return dp[i][j] = min(up, left);
+}
+int minSumPath(int m , int n, vector<vector<int>> &grid) {
+	vector<vector<int>> dp(m , vector<int> (n , -1));
+	return f_min_memo(m - 1, n - 1, grid, dp);
+}
+
+
+// tabulation approach
+// TC O(N * M)
+// SC O(N * M)
+int f_min_tab(int m, int n , vector<vector<int>> & grid, vector<vector<int>> & dp) {
+	for (int i = 0; i < m ; i++) {
+		for (int j = 0; j < n ; j++) {
+			if (i == 0 && j == 0) {
+				dp[i][j] = grid[0][0];
+			}
+			else {
+				int up = 1e9, left = 1e9;
+				if (i > 0)
+					up = grid[i][j] + dp[i - 1][j];
+				if (j > 0)
+					left = grid[i][j] + dp[i][j - 1];
+				dp[i][j] = min(up, left);
+			}
+		}
+	}
+
+	return dp[m - 1][n - 1];
+}
+int minSumPath_tabulation(int m , int n, vector<vector<int>> &grid) {
+	vector<vector<int>> dp(m , vector<int> (n , -1));
+	return f_min_tab(m, n, grid, dp);
+}
+
+void solve_minSumPath() {
+
+	vector<vector<int>> grid = {
+		{5, 9, 6},
+		{11, 5, 2}
+	};
+
+	int m = grid.size();
+	int n = grid[0].size();
+	// cout << minSumPath(m , n , grid);
+	cout << minSumPath_tabulation(m , n , grid);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////
+// DP 11. Triangle | Fixed Starting Point and Variable Ending Point | DP on GRIDS
+// this problem is related
+// fix starting point ---> and variable(not fixed) ending point
+// memorization approach
+// TC O(N)
+// SC O(N * N) + O(N) => (this is recursion stack space)
+int f_mpath_memo(int i, int j, int n, vector<vector<int>> & triangle, vector<vector<int>> & dp) {
+	if (i == n - 1) return triangle[i][j];
+
+	if (dp[i][j] != -1) return dp[i][j];
+
+	int down = triangle[i][j] + f_mpath_memo(i + 1, j, n , triangle, dp);
+	int diagonal = triangle[i][j] + f_mpath_memo(i + 1, j + 1, n , triangle, dp);
+
+	return dp[i][j] = min(down, diagonal);
+}
+int minimumPathSum(vector<vector<int>>& triangle, int n) {
+	// in this problem we are starting from top (i, j) = (0, 0)
+	vector<vector<int>> dp(n , vector<int> (n , -1));
+	return f_mpath_memo(0, 0, n, triangle, dp);
+}
+
+
+// tabulation approach
+// TC O(N)
+// SC O(N * N)
+int f_mpath_tab(int n, vector<vector<int>> & triangle, vector<vector<int>> & dp) {
+	for (int j = 0; j < n ; j++) {
+		dp[n - 1][j] = triangle[n - 1][j];
+	}
+
+	for (int i = n - 2; i >= 0; i--) {
+		// cout << i <<  " => ";
+		for (int j = i; j >= 0; j--) {
+			// cout << j << " ";
+			int down = triangle[i][j] + dp[i + 1][j];
+			int diagonal = triangle[i][j] + dp[i + 1][j + 1];
+
+			dp[i][j] = min(down, diagonal);
+		}
+		// cout << endl;
+	}
+
+	return dp[0][0];
+}
+int minimumPathSum_tabulation(vector<vector<int>>& triangle, int n) {
+	// in this problem we are starting from top (i, j) = (0, 0)
+	vector<vector<int>> dp(n , vector<int> (n , -1));
+	return f_mpath_tab(n, triangle, dp);
+}
+void solve_minimumPathSum() {
+	vector<vector<int> > triangle = {
+		{1},
+		{2, 3},
+		{3, 6, 7},
+		{8, 9, 6, 10}
+	};
+
+	int n = triangle.size();
+
+	// cout << minimumPathSum(triangle, n);
+	cout << minimumPathSum_tabulation(triangle, n);
+}
+
+////////////////////////////////////////////////////////////////////////
+// DP 12. Minimum/Maximum Falling Path Sum | Variable Starting and Ending Points | DP on Grids
+// this problem is related
+// variable starting point ---> and variable(not fixed) ending point
+// TC O(N * M)
+// SC O(N * M) + O(N)
+int getMaxiUtil(int i, int j, int m, vector<vector<int>> & mat, vector<vector<int>> & dp) {
+	if (j < 0 || j >= m) return -1e9;
+	if (i == 0) return mat[0][j];
+
+	if (dp[i][j] != -1) return dp[i][j];
+
+	int up = mat[i][j] + getMaxiUtil(i - 1, j, m , mat, dp);
+	int leftDigonal = mat[i][j] + getMaxiUtil(i - 1, j - 1, m , mat, dp);
+	int rightDigonal = mat[i][j] + getMaxiUtil(i - 1, j + 1, m , mat, dp);
+
+	return dp[i][j] = max(up, max(leftDigonal, rightDigonal));
+}
+int getMaxPathSum(vector<vector<int>> & mat) {
+	int m = mat.size();
+	int n = mat[0].size();
+
+	vector<vector<int>> dp(m , vector<int> (n, -1));
+
+	int maxi = INT_MIN;
+
+	for (int j = 0; j < n ; j++) {
+		int ans = getMaxiUtil(m - 1, j, n, mat, dp);
+		maxi = max(maxi, ans);
+	}
+
+	return maxi;
+}
+
+
+// tabulation approach
+// TC O(N * M)
+// SC O(N * M)
+int getMaxPathSum_tabulation(vector<vector<int>> & mat) {
+	int m = mat.size();
+	int n = mat[0].size();
+	vector<vector<int>> dp(m , vector<int> (n, -1));
+
+	// Initializing first row - base condition
+	for (int j = 0; j < n; j++) {
+		dp[0][j] = mat[0][j];
+	}
+
+	for (int i = 1; i < m; i++) {
+		for (int j = 0; j < n; j++) {
+			int up = mat[i][j] + dp[i - 1][j];
+
+			int leftDigonal = mat[i][j];
+			if (j - 1 >= 0) leftDigonal += dp[i - 1][j - 1];
+			else leftDigonal += -1e9;
+
+			int rightDigonal = mat[i][j];
+			if (j + 1 < n) rightDigonal += dp[i - 1][j + 1];
+			else rightDigonal += -1e9;
+
+			dp[i][j] = max(up, max(leftDigonal, rightDigonal));
+		}
+	}
+
+	int maxi = INT_MIN;
+	for (int j = 0; j < n; j++) {
+		maxi = max(maxi, dp[m - 1][j]);
+	}
+
+	return maxi;
+}
+void solve_getMaxPathSum() {
+	vector<vector<int> > mat = {
+		{1, 2, 10, 4},
+		{100, 3, 2, 1},
+		{1, 1, 20, 2},
+		{1, 2, 2, 1}
+	};
+
+	// cout << getMaxPathSum(mat);
+	cout << getMaxPathSum_tabulation(mat);
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// DP 13. Cherry Pickup II | 3D DP Made Easy | DP On Grids
+// fixed starting point , variable ending point
+
+// TC O(N * M * M)
+// SC O(N * M * M) + O(N)
+int maxChocoUtil(int i , int j1, int j2, int n , int m, vector<vector<int>> &grid, vector<vector<vector<int>>> & dp) {
+	if (j1 < 0 || j1 >= m || j2 < 0 || j2 >= m) return -1e9;
+
+	// base condition
+	if (i == n - 1) {
+		if (j1 == j2) return grid[i][j1];
+		else return grid[i][j1] + grid[i][j2];
+	}
+
+	if (dp[i][j1][j2] != -1) return dp[i][j1][j2];
+
+	int maxi = INT_MIN;
+	for (int di = -1; di <= 1; di++) {
+		for (int dj = -1 ; dj <= 1; dj++) {
+			int ans;
+			if (j1 == j2)
+				ans = grid[i][j1] + maxChocoUtil(i + 1, j1 + di, j2 + dj, n , m, grid, dp);
+			else
+				ans = grid[i][j1] + grid[i][j2] + maxChocoUtil(i + 1, j1 + di, j2 + dj, n , m, grid, dp);
+			maxi = max(maxi, ans);
+		}
+	}
+	return dp[i][j1][j2] = maxi;
+}
+int maximumChocolates(int n, int m, vector<vector<int>> &grid) {
+	vector<vector<vector<int>>> dp(n , vector<vector<int>> (m , vector<int> (m , -1)));
+	return maxChocoUtil(0, 0, m - 1, n , m, grid, dp);
+}
+
+
+// tabulation approach
+// TC O(N * M * M)
+// SC O(N * M * M) + O(N)
+int maximumChocolates_tabulation(int n, int m, vector<vector<int>> &grid) {
+	vector<vector<vector<int>>> dp(n , vector<vector<int>> (m , vector<int> (m , -1)));
+
+	// Base Condition
+	for (int j1 = 0; j1 < m ; j1++) {
+		for (int j2 = 0; j2 < m ; j2++) {
+			if (j1 == j2) dp[n - 1][j1][j2] = grid[n - 1][j1];
+			else dp[n - 1][j1][j2] = grid[n - 1][j1] + grid[n - 1][j2];
+		}
+	}
+
+	//Outer Nested Loops for travering DP Array
+	for (int i = n - 2; i >= 0; i--) {
+		for (int j1 = 0; j1 < m; j1++) {
+			for (int j2 = 0; j2 < m; j2++) {
+				int maxi = -1e8;
+
+				// Inner nested loops to try out 9 optioins
+				for (int di = -1; di <= 1; di++) {
+					for (int dj = -1; dj <= 1 ; dj++) {
+						int ans;
+
+						if (j1 == j2) ans = grid[i][j1];
+						else ans = grid[i][j1] + grid[i][j2];
+
+						if ((j1 + di < 0 || j1 + di >= m)  || (j2 + dj < 0 || j2 + dj >= m))
+							ans += -1e8;
+						else
+							ans += dp[i + 1][j1 + di][j2 + dj];
+
+						maxi = max(ans, maxi);
+					}
+				}
+				dp[i][j1][j2] = maxi;
+			}
+		}
+	}
+	return dp[0][0][m - 1];
+}
+
+void solve_maximumChocolates() {
+	vector<vector<int> > grid = {
+		{2, 3, 1, 2},
+		{3, 4, 2, 2},
+		{5, 6, 3, 5},
+	};
+
+	int n = grid.size();
+	int m = grid[0].size();
+
+	// cout << maximumChocolates(n, m, grid);
+	cout << maximumChocolates_tabulation(n, m, grid);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////// Dp on Subsequences/subsets /////////////////////////////////////////
+// DP 14. Subset Sum Equals to Target | Identify DP on Subsequences/subsets and Ways to Solve them
+// Subsequences/subsets => defi => any contigous/ non-contigious part of the array is known as Subsequences/subsets
+// Subsequences => [1, 2, 3] => so 1, 3 is contigious and following order
+//              => 3, 1 is not contigious so it it not Subsequence
+
+// subset => might are might not follow order
+
+// [1, 2, 3] => 2, 3 => is follow order so we called subsequnce and we can also called subArray
+
+// TC O(N * K)
+// SC O(N * K) + O(N)
+bool subsetSumUtil(int ind, int target, vector<int> & arr, vector<vector<int>> & dp) {
+	if (target == 0)
+		return true;
+	// return dp[ind][target] = true;
+	if (ind == 0)
+		return (arr[0] == target);
+	// return dp[ind][target] = (arr[0] == target);
+
+	if (dp[ind][target] != -1) return dp[ind][target];
+
+	bool notPick = subsetSumUtil(ind - 1, target, arr, dp);
+	bool pick = false;
+	if (arr[ind] <= target)
+		pick = subsetSumUtil(ind - 1, target - arr[ind], arr, dp);
+
+	return dp[ind][target] = pick || notPick;
+}
+bool subsetSumToK(int n, int k, vector<int> &arr) {
+	vector<vector<int>> dp(n + 1, vector<int> (k + 1, -1));
+	return subsetSumUtil(n - 1, k , arr, dp);
+
+}
+
+// tabulation approach
+// TC O(N * K)
+// SC O(N * K)
+bool subsetSumToK_tabulation(int n, int k, vector<int> &arr) {
+	vector<vector<bool>> dp(n, vector<bool> (k + 1, false));
+
+	// base condition
+	for (int i = 0; i < n ; i++) dp[i][0] = true;
+	if (arr[0] <= k) dp[0][arr[0]] = true;
+
+	for (int ind = 1; ind < n ; ind++) {
+		for (int target = 1; target <= k; target++) {
+			bool notPick = dp[ind - 1][target];
+
+			bool pick = false;
+			if (arr[ind] <= target)
+				pick = dp[ind - 1][target - arr[ind]];
+			dp[ind][target] = pick || notPick;
+		}
+	}
+
+	return dp[n - 1][k];
+}
+
+void solve_subsetSumToK() {
+	vector<int> arr = {1, 2, 3, 4};
+	int k = 4;
+	int n = arr.size();
+
+	// if (subsetSumToK(n, k, arr))
+	if (subsetSumToK_tabulation(n, k, arr))
+		cout << "Subset with given target found";
+	else
+		cout << "Subset with given target not found";
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// DP 15. Partition Equal Subset Sum | DP on Subsequences
+// if total sum is odd than division is not possible in 2 equal sum
+
+// TC O(N * K)
+// SC O(N * K) + O(N)
+bool canPartition(vector<int> &arr, int n)
+{
+	int totSum  = 0;
+	for (int i = 0; i < n ; i++) totSum += arr[i];
+	// if odd totsum than return false
+	if (totSum % 2) return false;
+
+	int target = totSum / 2;
+	// this is using memorization
+	return subsetSumToK(n , target, arr);
+	//you can use tabulation also
+	// return subsetSumToK_tabulation(n , target, arr);
+}
+
+void  solve_canPartition() {
+	vector<int> arr = {2, 3, 3, 3, 4, 5};
+	int n = arr.size();
+
+	if (canPartition(arr, n))
+		cout << "The Array can be partitioned into two equal subsets";
+	else
+		cout << "The Array cannot be partitioned into two equal subsets";
+}
+
+////////////////////////////////////////////
+// Dp 16. Partition A Set Into Two Subsets With Minimum Absolute Sum Difference | DP on Subsequences
+// this is memorization approach
+// we can use tabulation approach also
+int minSubsetSumDifference(vector<int>& arr, int n) {
+	int totSum = 0;
+	for (int i = 0; i < n; i++) totSum += arr[i];
+
+	vector<vector<int>> dp (n, vector<int> (totSum + 1, -1));
+
+	for (int i = 0; i <= totSum; i++) {
+		bool dummy = subsetSumUtil(n - 1, i, arr, dp);
+	}
+
+	int mn = 1e9;
+	for (int i = 0; i <= totSum; i++) {
+		if (dp[n - 1][i] == true) {
+			int s1 = i;
+			int s2 = totSum - i;
+			int diff = abs(s1 - s2);
+			mn = min(mn , diff );
+		}
+	}
+	return mn;
+}
+
+void solve_minSubsetSumDifference() {
+	vector < int > arr = {1, 2, 3, 4};
+	int n = arr.size();
+
+	cout << "The minimum absolute difference is: " << minSubsetSumDifference(arr, n);
+}
+
+///////////////////////////////////////////////////////////////////////////
+// DP 17. Counts Subsets with Sum K | Dp on Subsequences
+int findWaysUtil(int ind, int target, vector<int> & arr, vector<vector<int>> & dp) {
+	if (target == 0) return 1; // if array does not containt 0 than this use
+	if (ind == 0) return arr[0] == target;
+
+	// if array containt 0 or not containt than this use
+	// if (ind == 0) {
+	// 	if (target == 0 && arr[0] == 0) return 2;
+	// 	if (target == 0 || target == arr[0]) return 1;
+	// 	return 0;
+	// }
+
+	if (dp[ind][target] != -1) return dp[ind][target];
+
+	int notPick = findWaysUtil(ind - 1, target, arr, dp);
+	int pick = 0;
+	if (arr[ind] <= target)
+		pick = findWaysUtil(ind - 1, target - arr[ind], arr, dp);
+	return dp[ind][target] = notPick + pick;
+}
+int findWays(vector<int> &num, int k) {
+	int n = num.size();
+	vector<vector<int>> dp(n , vector<int> (k + 1, -1));
+	return findWaysUtil(n - 1, k, num, dp);
+}
+
+// tabulation approach
+int findWays_tabulation(vector<int> & num, int k) {
+	int n = num.size();
+
+	vector<vector<int>> dp(n , vector<int> (k + 1, 0));
+
+	for (int i = 0; i < n; i++) dp[i][0] = 1;
+	if (num[0] <= k) dp[0][num[0]] = 1;
+
+	for (int ind = 1; ind < n ; ind++) {
+		for (int target = 1; target <= k ; target++) {
+			int notPick = dp[ind - 1][target];
+
+			int pick = 0;
+			if (num[ind] <= target)
+				pick = dp[ind - 1][target - num[ind]];
+
+			dp[ind][target] = notPick + pick;
+		}
+	}
+
+	return dp[n - 1][k];
+}
+void solve_findWays() {
+	vector<int> arr = {1, 2, 2, 3};
+	int k = 3;
+	// cout << "The number of subsets found are " << findWays(arr, k);
+	cout << "The number of subsets found are " << findWays_tabulation(arr, k);
+}
+
+/////////////////////////////////////////////////////////////////////////
+// DP 18. Count Partitions With Given Difference | Dp on Subsequences
+int m = (int)1e9 + 7;
+
+int countPartitionsUtil(int ind, int target, vector<int>& arr, vector<vector
+                        <int>> &dp) {
+
+	if (ind == 0) {
+		if (target == 0 && arr[0] == 0)
+			return 2;
+		if (target == 0 || target == arr[0])
+			return 1;
+		return 0;
+	}
+
+	if (dp[ind][target] != -1)
+		return dp[ind][target];
+
+	int notTaken = countPartitionsUtil(ind - 1, target, arr, dp);
+
+	int taken = 0;
+	if (arr[ind] <= target)
+		taken = countPartitionsUtil(ind - 1, target - arr[ind], arr, dp);
+
+	return dp[ind][target] = (notTaken + taken) % m;
+}
+
+int countPartitions(int d, vector<int>& arr) {
+	int n = arr.size();
+	int totSum = 0;
+	for (int i = 0; i < arr.size(); i++) {
+		totSum += arr[i];
+	}
+
+	//Checking for edge cases
+	if (totSum - d < 0) return 0;
+	if ((totSum - d) % 2 == 1) return 0;
+
+	int s2 = (totSum - d) / 2;
+
+	vector<vector<int>> dp(n, vector<int>(s2 + 1, -1));
+	return countPartitionsUtil(n - 1, s2, arr, dp);
+}
+
+// tabulation approach
+int count_tab(vector<int> &num, int tar) {
+	int n = num.size();
+
+	vector<vector<int>> dp(n, vector<int>(tar + 1, 0));
+
+	if (num[0] == 0) dp[0][0] = 2; // 2 cases -pick and not pick
+	else dp[0][0] = 1;  // 1 case - not pick
+
+	if (num[0] != 0 && num[0] <= tar) dp[0][num[0]] = 1; // 1 case -pick
+
+	for (int ind = 1; ind < n; ind++) {
+		for (int target = 0; target <= tar; target++) {
+
+			int notTaken = dp[ind - 1][target];
+
+			int taken = 0;
+			if (num[ind] <= target)
+				taken = dp[ind - 1][target - num[ind]];
+
+			dp[ind][target] = (notTaken + taken) % mod;
+		}
+	}
+	return dp[n - 1][tar];
+}
+
+int countPartitions_tabulation(int n, int d, vector<int>& arr) {
+	int totSum = 0;
+	for (int i = 0; i < n; i++) {
+		totSum += arr[i];
+	}
+
+	//Checking for edge cases
+	if (totSum - d < 0 || (totSum - d) % 2 ) return 0;
+
+	return count_tab(arr, (totSum - d) / 2);
+}
+
+void solve_countPartitions() {
+	vector<int> arr = {5, 2, 6, 4};
+	int d = 3;
+	int n = arr.size();
+	// cout << "The number of subsets found are " << countPartitions(d, arr);
+	cout << "The number of subsets found are " << countPartitions_tabulation(n , d, arr);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+// DP 19. 0 / 1 Knapsack | Recursion to Single Array Space Optimised Approach | DP on Subsequences
+// memorization approach
+// TC O(N * W)
+// SC O(N * W) + O(N)
+int knapsackUtil(vector<int> & weight, vector<int> & value, int ind, int maxWeight, vector<vector<int>> & dp) {
+	if (ind == 0) {
+		if (weight[0] <= maxWeight) return value[0];
+		else return 0;
+	}
+
+	if (dp[ind][maxWeight] != -1) return  dp[ind][maxWeight];
+
+	int notPick = 0 + knapsackUtil(weight, value, ind - 1, maxWeight, dp);
+	int pick = INT_MIN;
+	if (weight[ind] <= maxWeight)
+		pick = value[ind] + knapsackUtil(weight, value, ind - 1, maxWeight - weight[ind], dp);
+
+	return dp[ind][maxWeight] = max(notPick, pick);
+}
+int knapsack(vector<int> weight, vector<int> value, int n, int maxWeight) {
+	vector<vector<int>> dp(n , vector<int> (maxWeight + 1, -1));
+	return knapsackUtil(weight, value, n - 1, maxWeight, dp);
+}
+
+// tabulation approach
+// TC O(N * W)
+// SC O(N * W)
+int knapsack_tabulation(vector<int> weight, vector<int> value, int n, int maxWeight) {
+	vector<vector<int>> dp(n , vector<int> (maxWeight + 1, -1));
+
+	// Base Condition
+	for (int i = weight[0]; i <= maxWeight; i++)
+		dp[0][i] = value[0];
+
+	for (int ind = 1; ind < n; ind++) {
+		for (int cap = 0; cap <= maxWeight; cap++) {
+			int notPick = 0 + dp[ind - 1][cap];
+
+			int pick = INT_MIN;
+			if (weight[ind] <= cap)
+				pick = value[ind] + dp[ind - 1][cap - weight[ind]];
+
+			dp[ind][cap] = max(notPick, pick);
+		}
+	}
+
+	return dp[n - 1][maxWeight];
+}
+
+void solve_knapsack() {
+	vector<int> weight = {1, 2, 4, 5};
+	vector<int> value = {5, 4, 8, 6};
+	int maxWeight = 5;
+
+	int n = value.size();
+	// cout << "The Maximum value of items, thief can steal is " << knapsack(weight, value, n, maxWeight);
+	cout << "The Maximum value of items, thief can steal is " << knapsack_tabulation(weight, value, n, maxWeight);
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// DP 20. Minimum Coins | DP on Subsequences | Infinite Supplies Pattern
+int minimumElementsUtils(vector<int> & arr, int ind, int target, vector<vector<int>> & dp) {
+	if (ind == 0) {
+		if (target % arr[0] == 0) return target / arr[0];
+		return 1e9;
+	}
+
+	if (dp[ind][target] != -1) return dp[ind][target];
+
+	int notPick =  0 + minimumElementsUtils(arr, ind - 1, target, dp);
+	int pick = 1e9;
+
+	if (arr[ind] <= target)
+		pick = 1 + minimumElementsUtils(arr, ind, target - arr[ind], dp);
+	return min(notPick, pick);
+}
+int minimumElements(vector<int> &arr, int target) {
+	int n = arr.size();
+	vector<vector<int>> dp(n, vector<int> (target + 1, -1));
+	int ans = minimumElementsUtils(arr, n - 1, target, dp);
+	if (ans >= 1e9) return -1;
+	return ans;
+}
+
+
+// tabulation approach
+int minimumElements_tabulation(vector<int> &arr, int target) {
+	int n = arr.size();
+	vector<vector<int>> dp(n, vector<int> (target + 1, -1));
+
+	for (int i = 0; i <= target; i++) {
+		if (i % arr[0] == 0) dp[0][i] = i / arr[0];
+		else dp[0][i] = 1e9;
+	}
+
+	for (int ind = 1; ind < n ; ind++) {
+		for (int T = 0; T <= target; T++) {
+			int notPick = 0 + dp[ind - 1][T];
+			int pick = 1e9;
+
+			if (arr[ind] <= T)
+				pick = 1 + dp[ind][T - arr[ind]];
+
+			dp[ind][T] = min(notPick, pick);
+		}
+	}
+
+	int ans = dp[n - 1][target];
+	if (ans >=  1e9) return -1;
+	else return ans;
+}
+
+void solve_minimumElements() {
+	vector<int> arr = {1, 2, 3};
+	int Target = 7;
+
+	// cout << "The minimum number of coins required to form the target sum is "
+	//      << minimumElements(arr, Target);
+
+	cout << "The minimum number of coins required to form the target sum is "
+	     << minimumElements_tabulation(arr, Target);
+}
+int main() {
+	init_code();
+
+	// solve_fibo_dp();
+	// solve_fibo_dp_tab();
+	// solve_countDistinctWays();
+	// solve_forgJump();
+	// solve_forgJump_2();
+	// solve_maximumNonAdjacentSum();
+	// solve_houseRobber();
+	// solve_ninjaTraining();
+
+	// -------------- Grid problems ----------
+	// solve_uniquePaths();
+	// solve_uniquePathsWithObstacles();
+	// solve_minSumPath();
+	// solve_minimumPathSum();
+	// solve_getMaxPathSum();
+	// solve_maximumChocolates();
+
+	// -------------- dp on Subsequneces ----------------
+	// solve_subsetSumToK();
+	// solve_canPartition();
+	// solve_minSubsetSumDifference();
+	// solve_findWays();
+	// solve_countPartitions();
+	// solve_knapsack();
+	solve_minimumElements();
+}
+

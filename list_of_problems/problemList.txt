@@ -1,0 +1,27 @@
+// ((((((((((((((((( -------- Math -- Math ----------------- )))))))))))))))))  
+    // +++++++++++++++++ math.cpp ++++++++++++++++++++++
+    1.   =>  https://practice.geeksforgeeks.org/problems/count-digits-in-a-factorial3957/1               =>   Count digits in a factorial
+    2.   =>  https://practice.geeksforgeeks.org/problems/prime-number2314/1                              =>   Prime Number
+    3.   =>  https://practice.geeksforgeeks.org/problems/all-divisors-of-a-number/1                      =>   All divisors of a Number in sorted Order
+    4.   =>  https://leetcode.com/problems/three-divisors/description/                                   =>   1952. Three Divisors
+    5.   =>  math.cpp                                                                                    =>   sumUnderModulo(ll a, ll b)
+    6.   =>  math.cpp                                                                                    =>   add_two_large_string_numbers(string & a, string & b)
+    7.   =>  https://practice.geeksforgeeks.org/problems/modular-multiplicative-inverse-1587115620/1     =>   Modular Multiplicative Inverse
+
+    // +++++++++++++++++ Math.cpp ++++++++++++++++++++++
+    8.   =>  gcd of two numbers                                                                          =>   gcd1(int a,int b), gcd2(int a, int b)
+    9.   =>  https://leetcode.com/problems/find-greatest-common-divisor-of-array/                        =>   1979. Find Greatest Common Divisor of Array
+    10.  =>  https://leetcode.com/problems/self-dividing-numbers/                                        =>   728. Self Dividing Numbers
+    11.  =>  https://leetcode.com/problems/number-of-good-pairs/                                         =>   1512. Number of Good Pairs
+    12.  =>  https://leetcode.com/problems/subtract-the-product-and-sum-of-digits-of-an-integer/         =>   1281. Subtract the Product and Sum of Digits of an Integer
+    13.  =>  https://leetcode.com/problems/count-of-matches-in-tournament/                               =>   1688. Count of Matches in Tournament
+    14.  =>  https://leetcode.com/problems/max-consecutive-ones/description/                             =>   485. Max Consecutive Ones
+    15.  =>  https://leetcode.com/problems/four-divisors/                                                =>   1390. Four Divisors
+    16.  =>  https://leetcode.com/problems/unique-paths/                                                 =>   62. unique Paths
+    17.  =>  https://leetcode.com/problems/check-if-array-pairs-are-divisible-by-k/                      =>   1497. Check If Array Pairs Are Divisible by k                 => video link => https://www.youtube.com/watch?v=uVLp1tkT4NU&t=730s
+    18.  =>  https://www.geeksforgeeks.org/count-trailing-zeroes-factorial-number/                       =>   trailingZeroes(n)
+    19.  =>  https://leetcode.com/problems/permutation-sequence/                                         =>   60. Permutation Sequence                                      => video link => https://www.youtube.com/watch?v=wT7gcXLYoao&t=1257s
+
+
+// ((((((((((((((((( -------- bitManupluation ----------------- )))))))))))))))))  
+  

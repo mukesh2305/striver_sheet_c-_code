@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "string": "cpp",
+        "ostream": "cpp",
+        "*.tcc": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "Disabled",
+    "cSpell.words": [
+        "geeksforgeeks",
+        "gerges",
+        "mkum",
+        "nlogn"
+    ]
+}
